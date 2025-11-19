@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Weekend Date Plan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-main: #111111;
+            --text-sub: #555555;
+            --text-light: #888888;
+            --line-color: #e5e5e5;
+            --card-bg: #fafafa;
+            --accent-black: #000000;
+            --transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.9;
+            letter-spacing: 0.03em;
+            padding-bottom: 120px;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Shippori Mincho', serif;
+            font-weight: 600;
+        }
+
+        /* Utilities */
+        .container {
+            max-width: 460px; /* iPhone Plus系の幅に最適化 */
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: var(--transition);
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Header */
+        header {
+            padding: 80px 0 60px;
+            text-align: center;
+            border-bottom: 1px solid var(--line-color);
+            margin-bottom: 60px;
+        }
+
+        .header-sub {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            letter-spacing: 0.2em;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .header-desc {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            max-width: 300px;
+            margin: 0 auto;
+            font-feature-settings: "palt";
+        }
+
+        /* Plan Card */
+        .plan-card {
+            margin-bottom: 100px;
+            position: relative;
+        }
+
+        .plan-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-top: 1px solid var(--text-main);
+            padding-top: 15px;
+        }
+
+        .plan-label {
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+        }
+
+        .plan-tags {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .plan-title-area {
+            margin-bottom: 25px;
+        }
+
+        .plan-title-en {
+            display: block;
+            font-size: 3rem;
+            font-family: 'Shippori Mincho', serif;
+            line-height: 1;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .plan-title-jp {
+            font-size: 1rem;
+            color: var(--text-sub);
+            font-weight: 500;
+        }
+
+        /* Image Area */
+        .image-wrapper {
+            width: 100%;
+            height: 320px; /* 写真の高さを確保 */
+            background-color: #f0f0f0;
+            margin-bottom: 35px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .plan-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%) contrast(1.1);
+            transition: transform 1.5s ease, filter 1s ease;
+        }
+
+        .plan-card:hover .plan-img {
+            transform: scale(1.03);
+            filter: grayscale(0%) contrast(1);
+        }
+
+        /* Description & Highlights */
+        .plan-body {
+            padding: 0 5px;
+        }
+
+        .concept-text {
+            font-size: 0.95rem;
+            text-align: justify;
+            margin-bottom: 30px;
+            color: var(--text-main);
+        }
+
+        .highlights {
+            background: var(--card-bg);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .highlights h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .highlights ul {
+            list-style: none;
+        }
+
+        .highlights li {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            padding-left: 15px;
+            position: relative;
+            color: var(--text-sub);
+        }
+
+        .highlights li::before {
+            content: "・";
+            position: absolute;
+            left: 0;
+            color: var(--text-main);
+        }
+
+        /* Details Accordion */
+        .details-btn {
+            width: 100%;
+            background: #fff;
+            border: 1px solid var(--text-main);
+            color: var(--text-main);
+            padding: 18px;
+            font-family: 'Zen Kaku Gothic New', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .details-btn:hover {
+            background: var(--text-main);
+            color: #fff;
+        }
+
+        .details-btn::after {
+            content: "+";
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        .details-btn.active::after {
+            content: "−";
+        }
+
+        .details-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s ease;
+            border-left: 1px solid var(--line-color);
+            border-right: 1px solid var(--line-color);
+            border-bottom: 1px solid var(--line-color);
+        }
+
+        .timeline-box {
+            padding: 30px 20px;
+        }
+
+        .timeline-row {
+            display: flex;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .timeline-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .time-col {
+            width: 60px;
+            font-family: 'Shippori Mincho', serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            color: var(--text-main);
+        }
+
+        .info-col {
+            padding-left: 20px;
+            border-left: 1px solid var(--line-color);
+        }
+
+        .spot-name {
+            font-weight: 700;
+            font-size: 1rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .spot-desc {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            line-height: 1.6;
+        }
+
+        /* Select Button */
+        .select-btn {
+            width: 100%;
+            background: var(--accent-black);
+            color: #fff;
+            border: none;
+            padding: 20px;
+            font-size: 1rem;
+            letter-spacing: 0.15em;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .select-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-inner {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .modal-title {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .modal-text {
+            font-size: 1rem;
+            color: var(--text-sub);
+            margin-bottom: 40px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: 1px solid #000;
+            padding: 12px 40px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .modal-close:hover {
+            background: #000;
+            color: #fff;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-light);
+            margin-top: 60px;
+            letter-spacing: 0.1em;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="fade-in">
+        <span class="header-sub">DATE PLAN FOR MOM</span>
+        <h1>WEEKEND<br>ESCORTS</h1>
+        <p class="header-desc">9:00 Departure - 17:00 Return<br>Toyota City ⇄ Fujigaoka Area</p>
+    </header>
+
+    <div class="container">
+
+        <!-- PLAN A -->
+        <article class="plan-card fade-in">
+            <div class="plan-meta">
+                <span class="plan-label">PLAN 01</span>
+                <span class="plan-tags">#Shopping #Cafe #Lunch</span>
+            </div>
+            <div class="plan-title-area">
+                <span class="plan-title-en">City & Library</span>
+                <span class="plan-title-jp">藤が丘の街歩きと長久手の書店</span>
+            </div>
+            
+            <div class="image-wrapper">
+                <!-- 相対パスに変更 -->
+                <img src="A.png" alt="City and Library" class="plan-img">
+            </div>
+
+            <div class="plan-body">
+                <p class="concept-text">
+                    藤が丘の洗練された並木道を楽しみ、その後は隣町の大きな書店で知的探求を。
+                    賑やかさと静けさのバランスが良く、お買い物も食事も充実させたい日に最適です。
+                </p>
+
+                <div class="highlights">
+                    <h3>HIGHLIGHTS</h3>
+                    <ul>
+                        <li>マストの「ドトール藤が丘」で優雅な朝</li>
+                        <li>本格イタリアンまたは洋食で満足ランチ</li>
+                        <li>イオン長久手の大型書店で本選び＆ショッピング</li>
+                    </ul>
+                </div>
+
+                <button class="details-btn" onclick="toggleDetails(this)">VIEW TIMELINE</button>
+                <div class="details-content">
+                    <div class="timeline-box">
+                        <div class="timeline-row">
+                            <div class="time-col">09:00</div>
+                            <div class="info-col">
+                                <span class="spot-name">豊田市小川町 出発</span>
+                                <span class="spot-desc">🚗 車で藤が丘方面へ（約50分）</span>
+                            </div>
+                        </div>
+                        <div class="timeline-row">
+                            <div class="time-col">10:15</div>
+                            <div class="info-col">
+                                <span class="spot-name">ドトールコーヒーショップ</span>
+                                <span class="spot-desc">☕ 駅前の景色を眺めながらモーニングトーク。</span>
+                            </div>
+                        </div>
+                        <div class="timeline-row">
+                            <div class="time-col">11:30</div>
+                            <div class="info-col">
+                                <span class="spot-name">街歩き & ランチ</span>
+                                <span class="spot-desc">🍝 「ソル・ナシエンテ」等の人気店で美味しいお昼。</span>
+                            </div>
+                        </div>
+                        <div class="timeline-row">
+                            <div class="time-col">14:00</div>
+                            <div class="info-col">
+                                <span class="spot-name">長久手「未来屋書店」</span>
+                                <span class="spot-desc">📚 カフェ併設の大型書店でゆっくり本選び。</span>
+                            </div>
+                        </div>
+                        <div class="timeline-row">
+                            <div class="time-col">17:00</div>
+                            <div class="info-col">
+                                <span class="spot-name">帰宅</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="select-btn" onclick="openModal('PLAN A')">SELECT THIS PLAN</button>
+            </div>
+        </article>
+
+
+        <!-- PLAN B -->
+        <article class="plan-card fade-in">
+            <div class="plan-meta">
+                <span class="plan-label">PLAN 02</span>
+                <span class="plan-tags">#Bakery #Walk #Relax</span>
+            </div>
+            <div class="plan-title-area">
+                <span class="plan-title-en">Bakery Walk</span>
+                <span class="plan-title-jp">藤が丘の路地裏とパン屋巡り</span>
+            </div>
+            
+            <div class="image-wrapper">
+                <!-- 相対パスに変更 -->
+                <img src="B.png" alt="Bakery Walk" class="plan-img">
+            </div>
+
+            <div class="plan-body">
+                <p class="concept-text">
+                    移動時間を減らして、一つの街を深く味わうプラン。
+                    藤が丘・名東区エリアは有名なパン屋の激戦区。美味しい香りに包まれる散策を。
+                </p>
+
+                <div class="highlights">
+                    <h3>HIGHLIGHTS</h3>
+                    <ul>
+                        <li>ドトールでゆっくり作戦会議</li>
+                        <li>駅ビル「effe」で軽めの書店チェック</li>
+                        <li>名店「バゲットラビット」で絶品パンをお土産に</li>
+                    </ul>
+                </div>
+
+                <button class="details-btn" onclick="toggleDetails(this)">VIEW TIMELINE</button>
+                <div class="details-content">
+                    <div class="timeline-box">
+                        <div class="timeline-row">
+                            <div class="time-col">09:00</div>
+                            <div class="info-col">
+                                <span class="spot-name">豊田市小川町 出発</span>
+                            </div>
+                        </div>
+                        <div class="timeline-row">
+                            <div class="time-col">10:15</div>
+                            <div class="info-col">
+                                <span class="spot-name">ドトールコーヒーショップ</span>
+                                <span class="spot-desc">☕ まずはここで一息。</span>
+                            </div>
+                        </div>
+                        <div class="timeline-row">
+                            <div class="time-col">11:30</div>
+                            <div class="info-col">
+                                <span class="spot-name">駅ビル書店 & 隠れ家ランチ</span>
+                                <span class="spot-desc">🍽️ 「あさり家」や「にくきゅう」で落ち着いた食事。</span>
+                            </div>
+                        </div>
+                        <div class="timeline-row">
+                            <div class="time-col">14:00</div>
+                            <div class="info-col">
+                                <span class="spot-name">有名ベーカリー巡り</span>
+                                <span class="spot-desc">🥖 バゲットラビット等で明日の朝食選び。</span>
+                            </div>
+                        </div>
+                        <div class="timeline-row">
+                            <div class="time-col">17:00</div>
+                            <div class="info-col">
+                                <span class="spot-name">帰宅</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="select-btn" onclick="openModal('PLAN B')">SELECT THIS PLAN</button>
+            </div>
+        </article>
+
+
+        <!-- PLAN C -->
+        <article class="plan-card fade-in">
+            <div class="plan-meta">
+                <span class="plan-label">PLAN 03</span>
+                <span class="plan-tags">#BookCafe #Chill #Drive</span>
+            </div>
+            <div class="plan-title-area">
+                <span class="plan-title-en">The Book Cafe</span>
+                <span class="plan-title-jp">帰り道にある「座れる」本屋</span>
+            </div>
+            
+            <div class="image-wrapper">
+                <!-- 相対パスに変更 -->
+                <img src="C.png" alt="Book Cafe" class="plan-img">
+            </div>
+
+            <div class="plan-body">
+                <p class="concept-text">
+                    藤が丘の空気を楽しんだ後は、帰り道にある東郷のTSUTAYAへ。
+                    座って本を読める極上の空間で、お母様とゆっくり語り合えるベストプランです。
+                </p>
+
+                <div class="highlights">
+                    <h3>HIGHLIGHTS</h3>
+                    <ul>
+                        <li>北欧風カフェでゆったりランチ</li>
+                        <li>ららぽーと東郷のTSUTAYAは座席数No.1</li>
+                        <li>帰りの運転が短く（東郷→豊田）、疲れ知らず</li>
+                    </ul>
+                </div>
+
+                <button class="details-btn" onclick="toggleDetails(this)">VIEW TIMELINE</button>
+                <div class="details-content">
+                    <div class="timeline-box">
+                        <div class="timeline-row">
+                            <div class="time-col">09:00</div>
+                            <div class="info-col">
+                                <span class="spot-name">豊田市小川町 出発</span>
+                            </div>
+                        </div>
+                        <div class="timeline-row">
+                            <div class="time-col">10:15</div>
+                            <div class="info-col">
+                                <span class="spot-name">ドトールコーヒーショップ</span>
+                                <span class="spot-desc">☕ デートの始まりはここから。</span>
+                            </div>
+                        </div>
+                        <div class="timeline-row">
+                            <div class="time-col">11:30</div>
+                            <div class="info-col">
+                                <span class="spot-name">フォトベルカフェ長久手</span>
+                                <span class="spot-desc">🥗 北欧デザインのおしゃれ空間でランチ。</span>
+                            </div>
+                        </div>
+                        <div class="timeline-row">
+                            <div class="time-col">13:30</div>
+                            <div class="info-col">
+                                <span class="spot-name">ららぽーと東郷 TSUTAYA</span>
+                                <span class="spot-desc">📚 スタバ併設。座ってゆっくり本が読めます。</span>
+                            </div>
+                        </div>
+                        <div class="timeline-row">
+                            <div class="time-col">17:00</div>
+                            <div class="info-col">
+                                <span class="spot-name">帰宅</span>
+                                <span class="spot-desc">🏠 ここから家まではすぐ近くです。</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="select-btn" onclick="openModal('PLAN C')">SELECT THIS PLAN</button>
+            </div>
+        </article>
+
+    </div>
+
+    <footer>
+        <p>DESIGNED FOR MY MOTHER</p>
+    </footer>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-inner">
+            <h2 class="modal-title" style="font-family: 'Shippori Mincho'">Thank you</h2>
+            <p class="modal-text">一緒に行くのを楽しみにしています。</p>
+            <button class="modal-close" onclick="closeModal()">CLOSE</button>
+        </div>
+    </div>
+
+    <script>
+        // Intersection Observer for Fade-in
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting){
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Accordion
+        function toggleDetails(btn) {
+            const content = btn.nextElementSibling;
+            btn.classList.toggle('active');
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        }
+
+        // Modal
+        function openModal(planName) {
+            const modal = document.getElementById('modal');
+            const text = document.querySelector('.modal-text');
+            const title = document.querySelector('.modal-title');
+            
+            title.innerText = "Excellent!";
+            text.innerHTML = `<b>${planName}</b><br>運転お願いします。`;
+            
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
